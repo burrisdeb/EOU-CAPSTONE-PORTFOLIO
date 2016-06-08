@@ -1,0 +1,91 @@
+##Narcissism vs. Social Harmony
+
+
+The first step is to read in the data.
+```{r}
+dat<-read.csv("narcis.csv")
+```
+
+The next step is to check out the structure of the data.
+
+```{r}
+str(dat)
+```
+
+As we can see dat is a data frame with two variables: group and RPQ.
+<!--
+Find the mean words per minute for the two groups.
+-->
+```{r}
+mean(dat$RPQ[dat$group=="soc.harm"])
+mean(dat$RPQ[dat$group=="narcis"])
+```
+By looking at the means it appears that the group who read the narcissitc paragraph had more yes answers per question than the group who read the social harmony. The mean for social harmony is 4.13, while the mean for narcissism is 6.44.
+
+
+At this point I will run an independent t-test to determine if the mean RPQ for the narcissim paragrap reading group is different from the mean RPQ from the social harmony group.
+
+```{r}
+t.test(dat$RPQ[dat$Group=="soc.harm"],
+            dat$RPQ[dat$Group=="narcis. "],
+                  var.equal=TRUE)
+```
+Examination of the results of our t-test indicates that individuals in
+the group that read the narcissism paragrap had more RPQ than the social harmony paragraph group, t(30) = (-2.27), p = 0.031.
+
+
+In order to create a figure of the data, I loaded the
+ggplot2, gplots, and dplyr libraries.
+
+```{r}
+library(ggplot2)
+library(gplots)
+library(dplyr)
+```
+Next I need to use dplyr to summarize the data and find the means and
+standard errors of the means for each situation.
+
+```{r}
+temp<-dat%>%group_by(Group)%>%
+  summarize(means=mean(RPQ),
+            sems=sd(RPQ)/sqrt(length(RPQ)))
+```
+
+
+Armed with the summarized data I can now create a figure of the data.
+
+```{r}
+f<-ggplot(temp,aes(x=factor(Group),y=means))+
+  geom_bar(stat="identity", color="black",
+           fill=c("deepskyblue2", "deeppink"))+
+  geom_errorbar(aes(ymax=means+sems,
+                    ymin=means-sems),
+                width=.2)+
+  ggtitle("RPQ; Narcissism vs. Social Harmony")+
+  labs(x="Narcissitic Answers Per Reading", y="Responses Per Question (ms)")+
+  scale_x_discrete(breaks=c("narcis. ","soc.harm"),
+                   labels=c("Narcissism","Social Harmony"))+
+  theme(plot.title=element_text(size=15,
+                                face="bold",
+                                vjust=.5))+
+  theme(axis.title.x=element_text(size=12,
+                                  face="bold",
+                                  vjust=-.25))+
+  theme(axis.title.y=element_text(size=12,
+                                  face="bold",
+                                  vjust=.25))+
+  theme(axis.text.x=element_text(size=10,
+                                 face="bold",
+                                 color="black"))+
+  theme(axis.text.y=element_text(size=10,
+                                 face="bold",
+                                 color="black"))+
+  coord_cartesian(ylim=c(min(temp$means)-2*max(temp$sems),
+                         max(temp$means)+2*max(temp$sems)))+
+  theme(panel.border=element_blank(),
+        axis.line=element_line())+
+  theme(panel.grid.major.x=element_blank())+
+  theme(panel.grid.major.y=element_line(color="darkgrey"))+
+  theme(panel.grid.minor.y=element_blank())
+f
+```
