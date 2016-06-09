@@ -19,5 +19,5 @@ foods-->
 3. DOCUMENTS:
 *BurrisSharpe.pdf.*
 *NARCISSIS POSTER.odt.*
-*pOSTER PSY 441 Burris Harp sHARPE.pptx.pdf .*
+*Poster PSY 441 Burris Harp Sharp.pptx.pdf .*
 
